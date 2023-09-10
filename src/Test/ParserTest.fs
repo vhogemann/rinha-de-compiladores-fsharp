@@ -1,4 +1,4 @@
-module Test
+module Test.Parser
 
 open NUnit.Framework
 open System.IO

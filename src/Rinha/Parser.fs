@@ -4,8 +4,6 @@ open Thoth.Json.Net
 
 module Decode =
 
-    let kind (get: Decode.IGetters) = get.Required.Field "kind" Decode.string
-
     let location (get: Decode.IGetters) =
         let loc: Decoder<AST.Nodes.Loc> =
             Decode.object (fun get ->
@@ -17,20 +15,17 @@ module Decode =
 
     let integer (get: Decode.IGetters) =
         AST.Nodes.Term.Int
-            { kind = get |> kind
-              location = get |> location
+            { location = get |> location
               value = get.Required.Field "value" Decode.decimal }
 
     let string (get: Decode.IGetters) =
         AST.Nodes.Term.Str
-            { kind = get |> kind
-              location = get |> location
+            { location = get |> location
               value = get.Required.Field "value" Decode.string }
 
     let call (term: Decoder<AST.Nodes.Term>) (get: Decode.IGetters) =
         AST.Nodes.Term.Call
-            { kind = get |> kind
-              location = get |> location
+            { location = get |> location
               callee = get.Required.Field "callee" term
               arguments = get.Required.Field "arguments" (Decode.array term) }
 
@@ -56,8 +51,7 @@ module Decode =
 
     let binary (term: Decoder<AST.Nodes.Term>) (get: Decode.IGetters) =
         AST.Nodes.Term.Binary
-            { kind = get |> kind
-              location = get |> location
+            { location = get |> location
               lhs = get.Required.Field "lhs" term
               op = get.Required.Field "op" binaryOp
               rhs = get.Required.Field "rhs" term }
@@ -69,68 +63,57 @@ module Decode =
 
     let func (term: Decoder<AST.Nodes.Term>) (get: Decode.IGetters) =
         AST.Nodes.Term.Function
-            { kind = get |> kind
-              location = get |> location
+            { location = get |> location
               parameters = get.Required.Field "parameters" (Decode.array param)
               value = get.Required.Field "value" term }
 
     let varField: Decoder<AST.Nodes.Var> =
         Decode.object (fun get ->
-            { kind = "Var"
-              location = get |> location
+            { location = get |> location
               text = get.Required.Field "text" Decode.string })
 
     let varTerm (get: Decode.IGetters) =
         AST.Nodes.Term.Var
-            {
-              kind = "Var"
-              location = get |> location
+            { location = get |> location
               text = get.Required.Field "text" Decode.string }
 
     let ``let`` (term: Decoder<AST.Nodes.Term>) (get: Decode.IGetters) =
         AST.Nodes.Term.Let
-            { kind = get |> kind
-              location = get |> location
+            { location = get |> location
               name = get.Required.Field "name" varField
               value = get.Required.Field "value" term
               next = get.Required.Field "next" term }
 
     let ``if`` (term: Decoder<AST.Nodes.Term>) (get: Decode.IGetters) =
         AST.Nodes.Term.If
-            { kind = get |> kind
-              location = get |> location
+            { location = get |> location
               condition = get.Required.Field "condition" term
               ``then`` = get.Required.Field "then" term
               otherwise = get.Required.Field "otherwise" term }
 
     let print (term: Decoder<AST.Nodes.Term>) (get: Decode.IGetters) =
         AST.Nodes.Term.Print
-            { kind = get |> kind
-              location = get |> location
+            { location = get |> location
               value = get.Required.Field "value" term }
 
     let first (term: Decoder<AST.Nodes.Term>) (get: Decode.IGetters) =
         AST.Nodes.Term.First
-            { kind = get |> kind
-              location = get |> location
+            { location = get |> location
               value = get.Required.Field "value" term }
 
     let second (term: Decoder<AST.Nodes.Term>) (get: Decode.IGetters) =
         AST.Nodes.Term.Second
-            { kind = get |> kind
-              location = get |> location
+            { location = get |> location
               value = get.Required.Field "value" term }
 
     let boolean (get: Decode.IGetters) =
         AST.Nodes.Term.Bool
-            { kind = get |> kind
-              location = get |> location
+            { location = get |> location
               value = get.Required.Field "value" Decode.bool }
 
     let tuple (term: Decoder<AST.Nodes.Term>) (get: Decode.IGetters) =
         AST.Nodes.Term.Tuple
-            { kind = get |> kind
-              location = get |> location
+            { location = get |> location
               first = get.Required.Field "first" term
               second = get.Required.Field "second" term }
 

@@ -10,6 +10,7 @@
 
     <ItemGroup>
         <Compile Include="ParserTest.fs" />
+        <Compile Include="InterpreterTest.fs" />
         <Compile Include="Program.fs"/>
         <Content Include="JSON\fib.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>

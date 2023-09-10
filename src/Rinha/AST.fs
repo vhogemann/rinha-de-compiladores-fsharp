@@ -12,41 +12,34 @@ module Nodes =
         filename: string
     }
     and If = {
-        kind: string
         condition: Term
         ``then``: Term
         otherwise: Term
         location: Loc
     }
     and Let = {
-        kind: string
         name: Var
         value: Term
         next: Term
         location: Loc
     }
     and Bool = {
-        kind: string
         value: bool
         location: Loc
     }
     and Int = {
-        kind: string
         value: decimal
         location: Loc
     }
     and Str = {
-        kind: string
         value: string
         location: Loc
     }
     and Var = {
-        kind: string
         text: string
         location: Loc
     }
     and Binary = {
-        kind: string
         lhs: Term
         op: BinaryOp
         rhs: Term
@@ -68,34 +61,28 @@ module Nodes =
         | Or
         | Not
     and Call = {
-        kind: string
         callee: Term
         arguments: Term[]
         location: Loc        
     }
     and Function = {
-        kind: string
         parameters: Param[]
         value: Term
         location: Loc
     }
     and Print = {
-        kind: string
         value: Term
         location: Loc
     }
     and First = {
-        kind: string
         value: Term
         location: Loc
     }
     and Second = {
-        kind: string
         value: Term
         location: Loc
     }
     and Tuple = {
-        kind: string
         first: Term
         second: Term
         location: Loc
@@ -118,4 +105,4 @@ module Nodes =
         | Bool of Bool
         | Tuple of Tuple
         | Var of Var
-        | Null      
+        | Null
