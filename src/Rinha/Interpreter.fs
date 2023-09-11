@@ -105,6 +105,23 @@ module Call =
             |> Result.bind isFunction
             |> Result.bind (fun fn -> execute evaluator fn term context)
         context |> Context.withResult result
+
+module Binary =
+    
+    let isLiteral = function
+        | Term.Bool _
+        | Term.Int _
+        | Term.Str _ -> true
+        | _ -> false
+    
+    let eval (evaluator:Eval) (term:AST.Nodes.Binary) (context:Context) =
+        let lhs = evaluator term.lhs context
+        let rhs = evaluator term.rhs context
+        match lhs.result, rhs.result with
+        | Ok lhs, Ok rhs when (isLiteral lhs) && (isLiteral rhs) ->
+        
+        
+        ()
         
 module Term =
     let rec eval (term:Term) (context:Context) : Context =
@@ -113,7 +130,8 @@ module Term =
             Var.eval node context
         | Term.Let node ->
             Let.eval eval node context
-        | Term.Call call -> Call.eval eval call context
+        | Term.Call call ->
+            Call.eval eval call context
         | Term.Binary binary -> failwith "todo"
         | Term.If ``if`` -> failwith "todo"
         | Term.Print node ->

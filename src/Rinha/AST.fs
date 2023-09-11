@@ -11,6 +11,10 @@ module Nodes =
         ``end``: int
         filename: string
     }
+    and Literal<'T> = {
+        value: 'T
+        location: Loc
+    }
     and If = {
         condition: Term
         ``then``: Term
@@ -23,18 +27,9 @@ module Nodes =
         next: Term
         location: Loc
     }
-    and Bool = {
-        value: bool
-        location: Loc
-    }
-    and Int = {
-        value: decimal
-        location: Loc
-    }
-    and Str = {
-        value: string
-        location: Loc
-    }
+    and Bool = Literal<bool>
+    and Int = Literal<int64>
+    and Str = Literal<string>
     and Var = {
         text: string
         location: Loc
