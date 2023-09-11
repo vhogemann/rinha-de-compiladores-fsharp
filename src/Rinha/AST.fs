@@ -28,7 +28,7 @@ module Nodes =
         location: Loc
     }
     and Bool = Literal<bool>
-    and Int = Literal<int64>
+    and Int = Literal<decimal>
     and Str = Literal<string>
     and Var = {
         text: string
@@ -65,18 +65,9 @@ module Nodes =
         value: Term
         location: Loc
     }
-    and Print = {
-        value: Term
-        location: Loc
-    }
-    and First = {
-        value: Term
-        location: Loc
-    }
-    and Second = {
-        value: Term
-        location: Loc
-    }
+    and Print = Literal<Term>
+    and First = Literal<Term>
+    and Second = Literal<Term>
     and Tuple = {
         first: Term
         second: Term
@@ -101,3 +92,20 @@ module Nodes =
         | Tuple of Tuple
         | Var of Var
         | Null
+        
+    module Term =
+        let location = function
+            | Int t -> t.location
+            | Str t -> t.location
+            | Call t -> t.location
+            | Binary t -> t.location
+            | Function t -> t.location
+            | Let t -> t.location
+            | If t -> t.location
+            | Print t -> t.location
+            | First t -> t.location
+            | Second t -> t.location
+            | Bool t -> t.location
+            | Tuple t -> t.location
+            | Var t -> t.location
+            | Null -> { start  = -1; ``end`` = -1; filename = "null" }
