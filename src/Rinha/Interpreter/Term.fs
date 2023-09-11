@@ -13,12 +13,15 @@ let rec eval (term:Term) (context:Context) : Context =
         Call.eval eval call context
     | Term.Binary binary ->
         Binary.eval eval binary context
-    | Term.If ``if`` -> failwith "todo"
+    | Term.If ``if`` ->
+        If.eval eval ``if`` context
     | Term.Print node ->
         Print.eval eval node context
-    | Term.First first -> failwith "todo"
-    | Term.Second second -> failwith "todo"
-    | Term.Null -> failwith "todo"
+    | Term.First first ->
+        Tuple.evalFirst eval first context
+    | Term.Second second ->
+        Tuple.evalSecond eval second context
+    | Term.Null _
     | Term.Bool _
     | Term.Int _
     | Term.Str _

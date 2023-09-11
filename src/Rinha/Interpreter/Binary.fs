@@ -57,6 +57,25 @@ module Int =
         | _ ->
             Error { description = $"{op} Unsupported for type Int"; location = term }
 
+
+module Bool =
+    let execute op (lhs:Bool) (rhs:Bool) term =
+        let loc = term |> Term.location
+        match op with
+        | Eq ->
+            Bool { value = lhs.value = rhs.value; location = loc } |> Ok
+        | Neq ->
+            Bool { value = lhs.value <> rhs.value; location = loc } |> Ok
+        | And ->
+            Bool { value = lhs.value && rhs.value; location = loc } |> Ok
+        | Or ->
+            Bool { value = lhs.value || rhs.value; location = loc } |> Ok
+        | Not ->
+            Bool { value = not rhs.value; location = loc } |> Ok //???
+        | _ ->
+             Error { description = $"{op} Unsupported for type Bool"; location = term }
+
+
 let isLiteral = function
     | Term.Bool _
     | Term.Int _
@@ -69,8 +88,8 @@ let execute (lhs:Term) (op:BinaryOp) (rhs:Term) term =
      | _, Str _ -> Str.execute op lhs rhs term
      | Int l, Int r ->
          Int.execute op l r term
-     | Bool _, Bool _ ->
-         failwith "todo"
+     | Bool l, Bool r ->
+         Bool.execute op l r term
      | l, r -> Error { description = $"Unsupported operation ${op} for terms ${l} and ${r}"; location = term } 
     
 let eval (evaluator:Eval) (term:Binary) (context:Context) =
