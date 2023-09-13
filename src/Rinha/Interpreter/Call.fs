@@ -20,7 +20,7 @@ let resolve (arguments:Result<Term,RuntimeError>[]) =
         else
             Error errors.[0]
             
-let execute (evaluator:Eval) (fn:Function) (call:Call) (context:Context) =
+let execute (evaluator:Eval<Term>) (fn:Function) (call:Call) (context:Context) =
     let paramLenght = fn.parameters |> Array.length
     let argLenght = call.arguments |> Array.length
     if paramLenght <> argLenght then
@@ -47,7 +47,7 @@ let execute (evaluator:Eval) (fn:Function) (call:Call) (context:Context) =
             |> Context.result
         )
 
-let eval (evaluator:Eval) (term:Call) (context:Context) =
+let eval (evaluator:Eval<Term>) (term:Call) (context:Context) =
     let result =
         context |> evaluator term.callee
         |> Context.result

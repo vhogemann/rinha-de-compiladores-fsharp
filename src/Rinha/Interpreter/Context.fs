@@ -1,5 +1,6 @@
 namespace Rinha.Interpreter
 
+open System.Text
 open Rinha.AST.Nodes
 
 type RuntimeError = {
@@ -9,14 +10,16 @@ type RuntimeError = {
 
 type Context = {
     locals: Map<string,Term>
+    output: StringBuilder
     result: Result<Term,RuntimeError>
 }
 
-type Eval = Term -> Context -> Context
+type Eval<'T> = 'T -> Context -> Context
 
 module Context =
     let empty:Context = {
         locals = Map.empty
+        output = StringBuilder() 
         result = Term.Null |> Ok
     }
     
@@ -38,17 +41,16 @@ module Context =
         { context with result = result }
 
 module Var =
-    let eval (term:Var) (context:Context) =
+    let eval (context:Context) (term:Var) =
         { Context.empty with result = context.locals.[term.text] |> Ok }
 
 module Let =
-    let eval (evaluator:Eval) (term:Let) (context:Context) =
+    let eval (context:Context) (term:Let) =
         context
         |> Context.declare term.name.text term.value
-        |> evaluator term.next
 
 module Print =
-    let eval (evaluator:Eval) (term:Print) (context:Context) =
+    let eval (evaluator:Eval<Term>) (term:Print) (context:Context) =
         let context = context |> evaluator term.value
         context    
 
