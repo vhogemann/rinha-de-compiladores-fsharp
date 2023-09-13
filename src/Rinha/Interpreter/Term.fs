@@ -3,9 +3,9 @@ module Rinha.Interpreter.Term
 open Rinha.Interpreter
 open Rinha.AST.Nodes
 
-let rec eval (term:Term) (context:Result<Context,RuntimeError>) =
-    match context with
-    | Error _ -> context
+let rec eval (term:Term) (ctx:Result<Context,RuntimeError>) =
+    match ctx with
+    | Error _ -> ctx
     | Ok context ->        
         
     match term with
@@ -25,7 +25,14 @@ let rec eval (term:Term) (context:Result<Context,RuntimeError>) =
        |> eval call.callee
       
     | Term.Binary binary ->
-        Binary.eval eval binary context
+        ctx
+        |> eval binary.lhs
+        |> Result.map( fun context -> context.result )
+        |> Result.bind( fun lhs ->
+            ctx |> eval binary.rhs
+            |> Result.map(fun rhs -> lhs, rhs)
+        )
+        |>  //TODO
     | Term.If ``if`` ->
         If.eval eval ``if`` context
     | Term.Print node ->
