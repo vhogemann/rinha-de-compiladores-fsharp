@@ -11,7 +11,6 @@
     <Compile Include="Interpreter\Context.fs" />
     <Compile Include="Interpreter\Call.fs" />
     <Compile Include="Interpreter\Binary.fs" />
-    <Compile Include="Interpreter\If.fs" />
     <Compile Include="Interpreter\Tuple.fs" />
     <Compile Include="Interpreter\Term.fs" />
     <Compile Include="Program.fs" />

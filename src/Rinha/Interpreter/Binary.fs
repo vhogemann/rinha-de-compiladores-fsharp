@@ -4,13 +4,13 @@ open Rinha.AST.Nodes
 open Rinha.Interpreter
 
 module Str =
-    let apply op (lhs:Str) (rhs:Str) (term:Term) : Result<Term,RuntimeError> =
-        let loc = term |> Term.location
-        match op with
+    let apply (lhs:Str) (rhs:Str) (term:Binary) : Result<Term,RuntimeError> =
+        let loc = term.location
+        match term.op with
         | Add -> Str { value = $"{lhs.value}{rhs.value}"; location = loc  } |> Ok 
         | Eq  -> Bool { value = (lhs.value = rhs.value); location = loc} |> Ok
         | Neq -> Bool { value = (lhs.value <> rhs.value); location = loc} |> Ok
-        | op -> Error { description = $"{op} Unsupported for type Str"; location = term }
+        | op -> Error { description = $"{op} Unsupported for type Str"; location = Binary term }
         
     let convert (term:Term) : Result<Str,RuntimeError> =
         match term with
@@ -19,16 +19,16 @@ module Str =
         | Int i -> Ok { value = $"{i.value}"; location=i.location }
         | op -> Error { description = $"Unsupported conversion from {op} to Str"; location = op }
     
-    let execute op lhs rhs term =
+    let execute lhs rhs term =
         convert lhs
         |> Result.bind( fun lhs ->
             convert rhs
-            |> Result.bind (fun rhs -> apply op lhs rhs term))
+            |> Result.bind (fun rhs -> apply lhs rhs term))
 
 module Int =
-    let execute op (lhs:Int) (rhs:Int) term =
-        let loc = term |> Term.location
-        match op with
+    let execute (lhs:Int) (rhs:Int) (term:Binary) =
+        let loc = term.location
+        match term.op with
         | Add ->
             Int { value = lhs.value + rhs.value; location = loc } |> Ok
         | Sub ->
@@ -37,7 +37,7 @@ module Int =
             Int { value = lhs.value * rhs.value; location = loc } |> Ok
         | Div ->
             if rhs.value = 0M then
-                Error { description  = "Division by ZERO"; location = term }
+                Error { description  = "Division by ZERO"; location = Binary term }
             else
                 Int { value = lhs.value / rhs.value; location = loc } |> Ok
         | Rem ->
@@ -54,14 +54,14 @@ module Int =
             Bool { value = lhs.value <= rhs.value; location = loc } |> Ok
         | Gte ->
             Bool { value = lhs.value >= rhs.value; location = loc } |> Ok
-        | _ ->
-            Error { description = $"{op} Unsupported for type Int"; location = term }
+        | op ->
+            Error { description = $"{op} Unsupported for type Int"; location = Binary term }
 
 
 module Bool =
-    let execute op (lhs:Bool) (rhs:Bool) term =
-        let loc = term |> Term.location
-        match op with
+    let execute (lhs:Bool) (rhs:Bool) (term:Binary) =
+        let loc = term.location
+        match term.op with
         | Eq ->
             Bool { value = lhs.value = rhs.value; location = loc } |> Ok
         | Neq ->
@@ -73,7 +73,7 @@ module Bool =
         | Not ->
             Bool { value = not rhs.value; location = loc } |> Ok //???
         | _ ->
-             Error { description = $"{op} Unsupported for type Bool"; location = term }
+             Error { description = $"{term.op} Unsupported for type Bool"; location = Binary term }
 
 
 let isLiteral = function
@@ -82,29 +82,12 @@ let isLiteral = function
     | Term.Str _ -> true
     | _ -> false
     
-let execute (lhs:Term) (op:BinaryOp) (rhs:Term) term =
+let execute (lhs:Term) (rhs:Term) binary =
      match lhs, rhs with
      | Str _, _
-     | _, Str _ -> Str.execute op lhs rhs term
+     | _, Str _ -> Str.execute lhs rhs binary
      | Int l, Int r ->
-         Int.execute op l r term
+         Int.execute l r binary
      | Bool l, Bool r ->
-         Bool.execute op l r term
-     | l, r -> Error { description = $"Unsupported operation ${op} for terms ${l} and ${r}"; location = term } 
-    
-let eval (evaluator:Eval) (term:Binary) (context:Context) =
-    let lhs = evaluator term.lhs context
-    let rhs = evaluator term.rhs context
-    match lhs.result, rhs.result with
-    | Error _, _ ->
-        lhs
-    | _, Error _ ->
-        rhs
-    | Ok lhs, Ok rhs when (isLiteral lhs) && (isLiteral rhs) ->
-        context
-        |> Context.withResult (execute lhs (term.op) rhs (Binary term))
-    | _ ->
-        let error = { description = $"Expecting Literal/Literal, got {lhs.result}/{lhs.result} "; location = Binary term }
-        context
-        |> Context.withResult (Error error)
-
+         Bool.execute l r binary
+     | l, r -> Error { description = $"Unsupported operation ${binary.op} for terms ${l} and ${r}"; location = Binary binary }

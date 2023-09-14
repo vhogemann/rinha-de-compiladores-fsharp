@@ -42,7 +42,3 @@ module Let =
     let eval (term: Let) (context: Context) =
         context |> Context.declare term.name.text term.value |> Ok
 
-module Print =
-    let eval (evaluator: Eval<Term>) (term: Print) (context: Context) =
-        let context = context |> evaluator term.value
-        Ok context
