@@ -2,25 +2,27 @@ module Rinha.Interpreter.Call
 
 open Rinha.AST.Nodes
 
-let bind action (call: Call) (context: Context) =
-    match call.callee with
-    | Function fn -> action call fn context
-    | _ ->
-        Error
-            { description = $"Expecting function but got {call.callee}"
-              location = Call call }
+let mapFunction context =
+    match context.result with
+    | Function _ -> Ok context
+    | _ -> Error { description = $"Expecting function but got {context.result}"; location = context.result }
 
-let mapArgsToParams =
-    let action = fun call fn context-> 
+let bindFunction action context =
+    match context.result with
+    | Function fn -> action fn context
+    | _ -> Error { description = $"Expecting function but got {context.result}"; location = context.result }
+
+let mapArgsToParams call context =
+    let action fn context =
         fn.parameters
         |> Array.map (fun p -> p.text)
         |> Array.zip call.arguments
         |> Array.fold (fun ctx (value, label) -> ctx |> Context.declare label value) context
         |> Ok
-    bind action
+    bindFunction action context
 
-let checkArguments =
-    let action = fun call fn context ->
+let checkArguments call context =
+    let action fn context =
         let args = call.arguments |> Array.length
         let pars = fn.parameters |> Array.length
 
@@ -30,4 +32,4 @@ let checkArguments =
                   location = Call call }
         else
             Ok context
-    bind action
+    bindFunction action context

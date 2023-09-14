@@ -2,16 +2,18 @@ module Rinha.Interpreter.Tuple
 
 open Rinha.AST.Nodes
 
-let evalFirst (evaluator:Eval) (term:First) (context:Context) =
+let first (term:First) =
     match term.value with
-    | Tuple tuple -> evaluator tuple.first context
+    | Tuple tuple ->
+        Ok tuple.first
     | _ ->
-        let error = Error { description = $"Expecting a Tuple but got a {term.value}"; location = term.value }
-        context |> Context.withResult error
+        Error { description = $"Expecting a Tuple but got a {term.value}"; location = term.value }
+        
     
-let evalSecond (evaluator:Eval) (term:Second) (context:Context) =
+let second (term:Second) =
     match term.value with
-    | Tuple tuple -> evaluator tuple.second context
+    | Tuple tuple ->
+        Ok tuple.second
     | _ ->
-        let error = Error { description = $"Expecting a Tuple but got a {term.value}"; location = term.value }
-        context |> Context.withResult error
+        Error { description = $"Expecting a Tuple but got a {term.value}"; location = term.value }
+        
