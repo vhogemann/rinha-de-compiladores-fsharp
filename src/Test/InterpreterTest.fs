@@ -103,31 +103,77 @@ let ``second (0,1)`` () =
             | Value.Int i -> i = 1M
             | _ -> false
         @>
-        
+
 [<Test>]
 let ``Variable declaration`` () =
+    // let a = 1
+    // let b = 1
+    // a + b
     let result =
-        Term.Let {
-            name = { text = "a"; location = LOC }
-            value = Term.Int { value = 1M; location = LOC }
-            location = LOC
-            next = Term.Let {
-                name = { text = "b"; location = LOC }
-                value = Term.Int { value = 1M; location = LOC }
-                location = LOC
-                next = Term.Binary {
-                    lhs = Term.Var { text = "a"; location = LOC }
-                    op = BinaryOp.Add
-                    rhs = Term.Var { text = "b"; location = LOC }
-                    location = LOC
-                } 
-            } 
-        }
+        Term.Let
+            { name = { text = "a"; location = LOC }
+              value = Term.Int { value = 1M; location = LOC }
+              location = LOC
+              next =
+                Term.Let
+                    { name = { text = "b"; location = LOC }
+                      value = Term.Int { value = 1M; location = LOC }
+                      location = LOC
+                      next =
+                        Term.Binary
+                            { lhs = Term.Var { text = "a"; location = LOC }
+                              op = BinaryOp.Add
+                              rhs = Term.Var { text = "b"; location = LOC }
+                              location = LOC } } }
         |> Eval.evaluate Map.empty
-    
+
     test
         <@
             match result with
             | Value.Int i -> i = 2M
+            | _ -> false
+        @>
+
+[<Test>]
+let ``If Then`` () =
+    let result =
+        Term.If
+            { condition =
+                Term.Binary
+                    { lhs = Term.Int { value = 1M; location = LOC }
+                      op = BinaryOp.Gte
+                      rhs = Term.Int { value = 0M; location = LOC }
+                      location = LOC }
+              ``then`` = Term.Str { value = "foo"; location = LOC }
+              otherwise = Term.Str { value = "bar"; location = LOC }
+              location = LOC }
+        |> Eval.evaluate Map.empty
+
+    test
+        <@
+            match result with
+            | Str s -> s = "foo"
+            | _ -> false
+        @>
+
+[<Test>]
+let ``If Else`` () =
+    let result =
+        Term.If
+            { condition =
+                Term.Binary
+                    { lhs = Term.Int { value = 0M; location = LOC }
+                      op = BinaryOp.Gte
+                      rhs = Term.Int { value = 1M; location = LOC }
+                      location = LOC }
+              ``then`` = Term.Str { value = "foo"; location = LOC }
+              otherwise = Term.Str { value = "bar"; location = LOC }
+              location = LOC }
+        |> Eval.evaluate Map.empty
+
+    test
+        <@
+            match result with
+            | Str s -> s = "bar"
             | _ -> false
         @>

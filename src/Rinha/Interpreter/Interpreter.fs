@@ -3,29 +3,21 @@ module Rinha.Interpreter.Eval
 open Rinha.AST.Nodes
 open Rinha.Interpreter
 
-let rec evaluate (environment:Environment) term : Value =
+let rec evaluate (environment: Environment) term : Value =
     let eval = evaluate environment
+
     match term with
-    | Term.Int i ->
-        Literal.visitInt i
-    | Term.Str s ->
-        Literal.visitStr s
-    | Term.Bool b ->
-        Literal.visitBool b
-    | Term.Tuple t ->
-        Literal.visitTuple eval t
-    | Term.First f ->
-        Literal.visitFirst eval f
-    | Term.Second s ->
-        Literal.visitSecond eval s
-    | Term.Print p ->
-        Statement.visitPrint eval p
-    | Term.Binary bin ->
-        Binary.visit eval bin
-    | Term.Let l ->
-        let env = Statement.visitLet eval environment l
-        evaluate env l.next
-    | Term.Var v ->
-        Literal.visitVar environment v
-    | _ ->
-        Value.Null
+    | Term.Int aInt -> Literal.visitInt aInt
+    | Term.Str aStr -> Literal.visitStr aStr
+    | Term.Bool aBool -> Literal.visitBool aBool
+    | Term.Tuple aTuple -> Literal.visitTuple eval aTuple
+    | Term.First aFirst -> Literal.visitFirst eval aFirst
+    | Term.Second aSecond -> Literal.visitSecond eval aSecond
+    | Term.Print aPrint -> Statement.visitPrint eval aPrint
+    | Term.Binary aBinary -> Binary.visit eval aBinary
+    | Term.Let aLet ->
+        let env = Statement.visitLet eval environment aLet
+        evaluate env aLet.next
+    | Term.Var aVar -> Literal.visitVar environment aVar
+    | Term.If aIf -> FlowControl.visitIf eval aIf
+    | _ -> Value.Null
