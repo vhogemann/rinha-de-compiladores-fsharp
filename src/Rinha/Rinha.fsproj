@@ -8,11 +8,7 @@
   <ItemGroup>
     <Compile Include="AST.fs" />
     <Compile Include="Parser.fs" />
-    <Compile Include="Interpreter\Context.fs" />
-    <Compile Include="Interpreter\Call.fs" />
-    <Compile Include="Interpreter\Binary.fs" />
-    <Compile Include="Interpreter\Tuple.fs" />
-    <Compile Include="Interpreter\Term.fs" />
+    <Compile Include="Interpreter.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
