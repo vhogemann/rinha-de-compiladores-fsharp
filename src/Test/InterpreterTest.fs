@@ -1,60 +1,133 @@
 ﻿module Test.Interpreter
 
-open System.IO
 open NUnit.Framework
 open Rinha.AST.Nodes
 open Rinha.Interpreter
 open Swensen.Unquote
 
-let location:Loc = { start = 0; ``end`` = 0; filename = "hello_world"  } 
+let LOC: Loc =
+    { start = 0
+      ``end`` = 0
+      filename = "hello_world" }
 
 [<Test>]
-let ``Hello World`` () =
-       let print = 
-           Term.Print {
-                location = location
-                value = Term.Str {
-                    value = "Hello World"
-                    location = location
-                }
-           }
-       let result = Term.eval print (Ok Context.empty)
-       test <@ result |> Result.isOk @>
-     
-    
+let ``1 + 1`` () =
+    let result =
+        Term.Binary
+            { lhs = Term.Int { value = 1M; location = LOC }
+              op = BinaryOp.Add
+              rhs = Term.Int { value = 1M; location = LOC }
+              location = LOC }
+        |> Eval.evaluate Map.empty
+
+    test
+        <@
+            match result with
+            | Value.Int i -> i = 2M
+            | _ -> false
+        @>
+
 [<Test>]
-let ``Literal`` () =
-    let str = Term.Str {
-        location = location
-        value = "Hello World"
-    }
-    
-    let context = Context.literal str
-    
-    test <@
-        match context.result with
-        | Term.Str str ->
-            str.value = "Hello World"
-        | _ ->
-            false
-         @>
-    
+let ``1 + ( 2 - 1 )`` () =
+    let result =
+        Term.Binary
+            { lhs = Term.Int { value = 1M; location = LOC }
+              op = BinaryOp.Add
+              rhs =
+                Term.Binary
+                    { lhs = Term.Int { value = 2M; location = LOC }
+                      op = BinaryOp.Sub
+                      rhs = Term.Int { value = 1M; location = LOC }
+                      location = LOC }
+              location = LOC }
+        |> Eval.evaluate Map.empty
+
+    test
+        <@
+            match result with
+            | Value.Int i -> i = 2M
+            | _ -> false
+        @>
+
 [<Test>]
-let ``Sum`` () =
-    let json = File.ReadAllText("JSON/sum.json")
-    let maybeFile =
-        json
-        |> Rinha.Parser.parse
+let ``"Hello" + " world!"`` () =
+    let result =
+        Term.Binary
+            { lhs = Term.Str { value = "Hello"; location = LOC }
+              op = BinaryOp.Add
+              rhs = Term.Str { value = " world!"; location = LOC }
+              location = LOC }
+        |> Eval.evaluate Map.empty
+
+    test
+        <@
+            match result with
+            | Value.Str s -> s = "Hello world!"
+            | _ -> false
+        @>
+
+[<Test>]
+let ``first (0,1)`` () =
+    let result =
+        Term.First
+            { value =
+                Term.Tuple
+                    { first = Term.Int { value = 0M; location = LOC }
+                      second = Term.Int { value = 1M; location = LOC }
+                      location = LOC }
+              location = LOC }
+        |> Eval.evaluate Map.empty
+
+    test
+        <@
+            match result with
+            | Value.Int i -> i = 0M
+            | _ -> false
+        @>
+
+[<Test>]
+let ``second (0,1)`` () =
+    let result =
+        Term.Second
+            { value =
+                Term.Tuple
+                    { first = Term.Int { value = 0M; location = LOC }
+                      second = Term.Int { value = 1M; location = LOC }
+                      location = LOC }
+              location = LOC }
+        |> Eval.evaluate Map.empty
+
+    test
+        <@
+            match result with
+            | Value.Int i -> i = 1M
+            | _ -> false
+        @>
+        
+[<Test>]
+let ``Variable declaration`` () =
+    let result =
+        Term.Let {
+            name = { text = "a"; location = LOC }
+            value = Term.Int { value = 1M; location = LOC }
+            location = LOC
+            next = Term.Let {
+                name = { text = "b"; location = LOC }
+                value = Term.Int { value = 1M; location = LOC }
+                location = LOC
+                next = Term.Binary {
+                    lhs = Term.Var { text = "a"; location = LOC }
+                    op = BinaryOp.Add
+                    rhs = Term.Var { text = "b"; location = LOC }
+                    location = LOC
+                } 
+            } 
+        }
+        |> Eval.evaluate Map.empty
     
-    match maybeFile with
-    | Error jsonError -> failwith jsonError
-    | Ok file ->
-        match (Term.eval file.expression (Ok Context.empty)) with
-        | Error { description = desc ; location = _ } -> failwith desc
-        | Ok context ->
-            test <@
-                    match context.result with
-                    | Null _ -> true
-                    | _ -> false
-                 @>
-  
+    test
+        <@
+            match result with
+            | Value.Int i -> i = 2M
+            | _ -> false
+        @>
