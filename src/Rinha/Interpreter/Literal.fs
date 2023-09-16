@@ -10,7 +10,7 @@ let rec toString value : string =
     | Value.Int i -> string i
     | Value.Bool b -> string b
     | Value.Error e -> e
-    | Value.Expression term -> $"%A{term}"
+    | Value.Fun term -> $"%A{term}"
     | Value.Tuple (left,right) -> $"( { toString left }, { toString right } )"
     | Value.Null -> "Null"
 
@@ -45,3 +45,4 @@ let visitVar (environment:Environment) (var:Var) =
         environment.[var.text]
     else
         Null
+       

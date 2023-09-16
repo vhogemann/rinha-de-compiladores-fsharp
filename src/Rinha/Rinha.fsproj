@@ -13,12 +13,9 @@
     <Compile Include="Interpreter\Binary.fs" />
     <Compile Include="Interpreter\Statement.fs" />
     <Compile Include="Interpreter\FlowControl.fs" />
+    <Compile Include="Interpreter\Callable.fs" />
     <Compile Include="Interpreter\Interpreter.fs" />
     <Compile Include="Program.fs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="JSON\fib.json" />
   </ItemGroup>
 
 

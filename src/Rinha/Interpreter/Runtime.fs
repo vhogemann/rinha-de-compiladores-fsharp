@@ -7,7 +7,7 @@ type Value =
 | Str of string
 | Bool of bool
 | Tuple of Value*Value
-| Expression of Term
+| Fun of Function
 | Error of string
 | Null
 

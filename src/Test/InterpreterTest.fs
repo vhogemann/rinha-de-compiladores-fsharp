@@ -4,6 +4,7 @@ open NUnit.Framework
 open Rinha.AST.Nodes
 open Rinha.Interpreter
 open Swensen.Unquote
+open System.IO
 
 let LOC: Loc =
     { start = 0
@@ -177,3 +178,71 @@ let ``If Else`` () =
             | Str s -> s = "bar"
             | _ -> false
         @>
+
+[<Test>]
+let ``Function Call`` () =
+    // let sum = (a,b) -> a+b
+    // sum(1,1)
+    let result =
+        Term.Let
+            { location = LOC
+              name = { text = "sum"; location = LOC }
+              value =
+                Term.Function
+                    { parameters = [| { text = "a"; location = LOC }; { text = "b"; location = LOC } |]
+                      value =
+                        Term.Binary
+                            { lhs = Term.Var { text = "a"; location = LOC }
+                              op = BinaryOp.Add
+                              rhs = Term.Var { text = "b"; location = LOC }
+                              location = LOC }
+                      location = LOC }
+              next =
+                Term.Call
+                    { callee = Var { text = "sum"; location = LOC }
+                      arguments =
+                        [| Term.Int { value = 1M; location = LOC }
+                           Term.Int { value = 1M; location = LOC } |]
+                      location = LOC } }
+        |> Eval.evaluate Map.empty
+
+    test
+        <@
+            match result with
+            | Value.Int i -> i = 2M
+            | _ -> false
+        @>
+
+[<Test>]
+let ``sum.json`` () =
+    let json = File.ReadAllText("JSON/sum.json")
+    let result = json |> Rinha.Parser.parse
+
+    match result with
+    | Result.Error msg -> failwith msg
+    | Result.Ok file ->
+        let result = file.expression |> Eval.evaluate Map.empty
+
+        test
+            <@
+                match result with
+                | Value.Null -> true
+                | _ -> false
+            @>
+
+[<Test>]
+let ``fib.json`` () =
+    let json = File.ReadAllText("JSON/fib.json")
+    let result = json |> Rinha.Parser.parse
+
+    match result with
+    | Result.Error msg -> failwith msg
+    | Result.Ok file ->
+        let result = file.expression |> Eval.evaluate Map.empty
+
+        test
+            <@
+                match result with
+                | Value.Null -> true
+                | _ -> false
+            @>
