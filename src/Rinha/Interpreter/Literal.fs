@@ -30,6 +30,7 @@ let visitFirst (eval: Evaluator) (first: Nodes.First) =
 
     match value with
     | Value.Tuple(first, _) -> first
+    | Value.Error _ -> value
     | _ -> Error $"Expecting a Tuple but got a {value.GetType().Name} @ {first.location}"
 
 
@@ -38,6 +39,7 @@ let visitSecond (eval: Evaluator) (second: Nodes.Second) =
     
     match value with
     | Value.Tuple(_, second) -> second
+    | Value.Error _ -> value
     | _ -> Error $"Expecting a Tuple but got a {value.GetType().Name} @ {second.location}"
     
 let visitVar (environment:Environment) (var:Var) =

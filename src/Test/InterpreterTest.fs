@@ -1,5 +1,6 @@
 ﻿module Test.Interpreter
 
+open System.Text
 open NUnit.Framework
 open Rinha.AST.Nodes
 open Rinha.Interpreter
@@ -19,7 +20,7 @@ let ``1 + 1`` () =
               op = BinaryOp.Add
               rhs = Term.Int { value = 1M; location = LOC }
               location = LOC }
-        |> Eval.evaluate Map.empty
+        |> Eval.evaluate System.Console.Out Map.empty
 
     test
         <@
@@ -41,7 +42,7 @@ let ``1 + ( 2 - 1 )`` () =
                       rhs = Term.Int { value = 1M; location = LOC }
                       location = LOC }
               location = LOC }
-        |> Eval.evaluate Map.empty
+        |> Eval.evaluate System.Console.Out Map.empty
 
     test
         <@
@@ -58,7 +59,7 @@ let ``"Hello" + " world!"`` () =
               op = BinaryOp.Add
               rhs = Term.Str { value = " world!"; location = LOC }
               location = LOC }
-        |> Eval.evaluate Map.empty
+        |> Eval.evaluate System.Console.Out Map.empty
 
     test
         <@
@@ -77,7 +78,7 @@ let ``first (0,1)`` () =
                       second = Term.Int { value = 1M; location = LOC }
                       location = LOC }
               location = LOC }
-        |> Eval.evaluate Map.empty
+        |> Eval.evaluate System.Console.Out Map.empty
 
     test
         <@
@@ -96,7 +97,7 @@ let ``second (0,1)`` () =
                       second = Term.Int { value = 1M; location = LOC }
                       location = LOC }
               location = LOC }
-        |> Eval.evaluate Map.empty
+        |> Eval.evaluate System.Console.Out Map.empty
 
     test
         <@
@@ -132,7 +133,7 @@ let ``Variable declaration`` () =
                                       location = LOC }
                               location = LOC
                               next = Var { text = "c"; location = LOC } } } }
-        |> Eval.evaluate Map.empty
+        |> Eval.evaluate System.Console.Out Map.empty
 
     test
         <@
@@ -154,7 +155,7 @@ let ``If Then`` () =
               ``then`` = Term.Str { value = "foo"; location = LOC }
               otherwise = Term.Str { value = "bar"; location = LOC }
               location = LOC }
-        |> Eval.evaluate Map.empty
+        |> Eval.evaluate System.Console.Out Map.empty
 
     test
         <@
@@ -176,7 +177,7 @@ let ``If Else`` () =
               ``then`` = Term.Str { value = "foo"; location = LOC }
               otherwise = Term.Str { value = "bar"; location = LOC }
               location = LOC }
-        |> Eval.evaluate Map.empty
+        |> Eval.evaluate System.Console.Out Map.empty
 
     test
         <@
@@ -210,7 +211,7 @@ let ``Function Call`` () =
                         [| Term.Int { value = 1M; location = LOC }
                            Term.Int { value = 1M; location = LOC } |]
                       location = LOC } }
-        |> Eval.evaluate Map.empty
+        |> Eval.evaluate System.Console.Out Map.empty
 
     test
         <@
@@ -221,52 +222,61 @@ let ``Function Call`` () =
 
 [<Test>]
 let ``sum.json`` () =
+    let sb = StringBuilder()
+    let writer = new StringWriter(sb)
+    
     let json = File.ReadAllText("JSON/sum.json")
     let result = json |> Rinha.Parser.parse
 
     match result with
     | Result.Error msg -> failwith msg
     | Result.Ok file ->
-        let result = file.expression |> Eval.evaluate Map.empty
+        let result = file.expression |> Eval.evaluate writer Map.empty
 
         test
             <@
                 match result with
-                | Value.Null -> true
+                | Value.Null -> sb.ToString() = "15\n"
                 | _ -> false
             @>
 
 [<Test>]
 let ``fib.json`` () =
+    let sb = StringBuilder()
+    let writer = new StringWriter(sb)
+    
     let json = File.ReadAllText("JSON/fib.json")
     let result = json |> Rinha.Parser.parse
 
     match result with
     | Result.Error msg -> failwith msg
     | Result.Ok file ->
-        let result = file.expression |> Eval.evaluate Map.empty
+        let result = file.expression |> Eval.evaluate writer Map.empty
 
         test
             <@
                 match result with
-                | Value.Null -> true
+                | Value.Null -> sb.ToString() = "55\n"
                 | _ -> false
             @>
 
 
 [<Test>]
 let ``combination.json`` () =
+    let sb = StringBuilder()
+    let writer = new StringWriter(sb)
+    
     let json = File.ReadAllText("JSON/combination.json")
     let result = json |> Rinha.Parser.parse
 
     match result with
     | Result.Error msg -> failwith msg
     | Result.Ok file ->
-        let result = file.expression |> Eval.evaluate Map.empty
+        let result = file.expression |> Eval.evaluate writer Map.empty
 
         test
             <@
                 match result with
-                | Value.Null -> true
+                | Value.Null -> sb.ToString() = "45\n"
                 | _ -> false
             @>

@@ -10,5 +10,9 @@ module Program =
             System.Console.Error.WriteLine msg
             1
         | Ok file ->
-            Rinha.Interpreter.Eval.evaluate Map.empty file.expression |> ignore
-            0
+            match Rinha.Interpreter.Eval.evaluate System.Console.Out Map.empty file.expression with
+            | Rinha.Interpreter.Value.Error err ->
+                System.Console.Error.WriteLine err
+                1
+            | _ ->
+                0

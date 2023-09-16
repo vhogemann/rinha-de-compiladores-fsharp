@@ -1,10 +1,11 @@
 module Rinha.Interpreter.Eval
 
+open System.IO
 open Rinha.AST.Nodes
 open Rinha.Interpreter
 
-let rec evaluate (environment: Environment) term : Value =
-    let eval = evaluate environment
+let rec evaluate (output:TextWriter) (environment: Environment) term : Value =
+    let eval = evaluate output environment
 
     match term with
     | Term.Int aInt -> Literal.visitInt aInt
@@ -13,11 +14,11 @@ let rec evaluate (environment: Environment) term : Value =
     | Term.Tuple aTuple -> Literal.visitTuple eval aTuple
     | Term.First aFirst -> Literal.visitFirst eval aFirst
     | Term.Second aSecond -> Literal.visitSecond eval aSecond
-    | Term.Print aPrint -> Statement.visitPrint eval aPrint
+    | Term.Print aPrint -> Statement.visitPrint eval output aPrint
     | Term.Binary aBinary -> Binary.visit eval aBinary
     | Term.Let aLet ->
         let env = Statement.visitLet eval environment aLet
-        evaluate env aLet.next
+        evaluate output env aLet.next
     | Term.Var aVar -> Literal.visitVar environment aVar
     | Term.If aIf -> FlowControl.visitIf eval aIf
     | Term.Function aFun -> Callable.visitFun aFun
@@ -27,9 +28,10 @@ let rec evaluate (environment: Environment) term : Value =
         | Value.Fun func ->
             if Callable.argsMatch aCall func then
                 let env = Callable.mapArguments eval environment aCall func
-                evaluate env func.value
+                evaluate output env func.value
             else
                 Error "arguments mismatch"
+        | Error _ -> result
         | _ ->
             Error $"Expecting a Function but got a {result.GetType().Name} @ ${ aCall.location }"
     | _ -> Value.Null

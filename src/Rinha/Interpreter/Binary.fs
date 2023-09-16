@@ -44,6 +44,8 @@ let visit (eval: Evaluator) (bin: Binary) : Value =
     | Value.Str s, _ -> visitStr s right bin
     | Value.Int l, Value.Int r -> visitInt l r bin
     | Value.Bool l, Value.Bool r -> visitBool l r bin
+    | Error e, _ -> Error e
+    | _, Error e -> Error e
     | _, _ ->
         Value.Error
             $"Unsupported operation {bin.op} for types {left.GetType().Name} and {right.GetType().Name} @ %A{bin.location}"
