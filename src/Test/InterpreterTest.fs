@@ -109,7 +109,8 @@ let ``second (0,1)`` () =
 let ``Variable declaration`` () =
     // let a = 1
     // let b = 1
-    // a + b
+    // let c = a + b
+    // c
     let result =
         Term.Let
             { name = { text = "a"; location = LOC }
@@ -121,11 +122,16 @@ let ``Variable declaration`` () =
                       value = Term.Int { value = 1M; location = LOC }
                       location = LOC
                       next =
-                        Term.Binary
-                            { lhs = Term.Var { text = "a"; location = LOC }
-                              op = BinaryOp.Add
-                              rhs = Term.Var { text = "b"; location = LOC }
-                              location = LOC } } }
+                        Term.Let
+                            { name = { text = "c"; location = LOC }
+                              value =
+                                Term.Binary
+                                    { lhs = Term.Var { text = "a"; location = LOC }
+                                      op = BinaryOp.Add
+                                      rhs = Term.Var { text = "b"; location = LOC }
+                                      location = LOC }
+                              location = LOC
+                              next = Var { text = "c"; location = LOC } } } }
         |> Eval.evaluate Map.empty
 
     test
@@ -233,6 +239,24 @@ let ``sum.json`` () =
 [<Test>]
 let ``fib.json`` () =
     let json = File.ReadAllText("JSON/fib.json")
+    let result = json |> Rinha.Parser.parse
+
+    match result with
+    | Result.Error msg -> failwith msg
+    | Result.Ok file ->
+        let result = file.expression |> Eval.evaluate Map.empty
+
+        test
+            <@
+                match result with
+                | Value.Null -> true
+                | _ -> false
+            @>
+
+
+[<Test>]
+let ``combination.json`` () =
+    let json = File.ReadAllText("JSON/combination.json")
     let result = json |> Rinha.Parser.parse
 
     match result with

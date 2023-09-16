@@ -10,5 +10,7 @@ let visitIf (eval:Evaluator) (aIf:Nodes.If) =
             eval aIf.``then``
         else
             eval aIf.otherwise
+    | Error _ ->
+        result
     | _ ->
         Error $"Expecting Bool condition but got {aIf.condition.GetType().Name} @ { aIf.location }"
