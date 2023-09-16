@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{452B2E76-C80E-4DC6-8A28-E41B0FF7964E}"
 	ProjectSection(SolutionItems) = preProject
 		..\README.md = ..\README.md
+		..\Dockerfile = ..\Dockerfile
 	EndProjectSection
 EndProject
 Global
