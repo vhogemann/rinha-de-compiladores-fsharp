@@ -1,7 +1,7 @@
 
 <div align="center">
 
-![banner](./banner.png)
+![banner](banner.png)
 
 </div>
 
