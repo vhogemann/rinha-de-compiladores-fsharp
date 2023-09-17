@@ -3,6 +3,11 @@ open System
 open System.IO
 
 let execute file =
+    if not (File.Exists file) then
+        Console.Error.WriteLine "File not found"
+        exit 1
+    else
+        
     let result =
         File.ReadAllText file
         |> Rinha.Parser.parse
@@ -11,7 +16,7 @@ let execute file =
         Console.Error.WriteLine msg
         1
     | Ok file ->
-        match Rinha.Interpreter.Eval.evaluate System.Console.Out Map.empty file.expression with
+        match Rinha.Interpreter.Eval.evaluate Console.Out Map.empty file.expression with
         | Rinha.Interpreter.Value.Error err ->
             Console.Error.WriteLine err
             1

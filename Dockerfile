@@ -13,7 +13,6 @@ FROM build AS publish
 RUN dotnet publish "Rinha.fsproj" -c Release -o /app/publish
 
 FROM base AS final
-COPY ["src/Test/JSON/fib.json", "/var/rinha/source.rinha.json"]
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Rinha.dll", "/var/rinha/source.rinha.json"]
