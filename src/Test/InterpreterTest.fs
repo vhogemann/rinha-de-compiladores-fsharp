@@ -29,6 +29,57 @@ let ``1 + 1`` () =
             | _ -> false
         @>
 
+[<Test>]        
+let ``1 - 1`` () =
+    let result =
+        Term.Binary
+            { lhs = Term.Int { value = 1M; location = LOC }
+              op = BinaryOp.Sub
+              rhs = Term.Int { value = 1M; location = LOC }
+              location = LOC }
+        |> Eval.evaluate System.Console.Out Map.empty
+
+    test
+        <@
+            match result with
+            | Value.Int i -> i = 0M
+            | _ -> false
+        @>
+        
+[<Test>]        
+let ``1 / 1`` () =
+    let result =
+        Term.Binary
+            { lhs = Term.Int { value = 1M; location = LOC }
+              op = BinaryOp.Div
+              rhs = Term.Int { value = 1M; location = LOC }
+              location = LOC }
+        |> Eval.evaluate System.Console.Out Map.empty
+
+    test
+        <@
+            match result with
+            | Value.Int i -> i = 1M
+            | _ -> false
+        @>
+        
+[<Test>]        
+let ``1 / 0`` () =
+    let result =
+        Term.Binary
+            { lhs = Term.Int { value = 1M; location = LOC }
+              op = BinaryOp.Div
+              rhs = Term.Int { value = 0M; location = LOC }
+              location = LOC }
+        |> Eval.evaluate System.Console.Out Map.empty
+
+    test
+        <@
+            match result with
+            | Value.Error _ -> true
+            | _ -> false
+        @>
+
 [<Test>]
 let ``1 + ( 2 - 1 )`` () =
     let result =
@@ -236,7 +287,7 @@ let ``sum.json`` () =
         test
             <@
                 match result with
-                | Value.Null -> sb.ToString() = "15\n"
+                | Value.Null -> sb.ToString().Trim() = "15"
                 | _ -> false
             @>
 
@@ -256,7 +307,7 @@ let ``fib.json`` () =
         test
             <@
                 match result with
-                | Value.Null -> sb.ToString() = "55\n"
+                | Value.Null -> sb.ToString().Trim() = "55"
                 | _ -> false
             @>
 
@@ -277,6 +328,6 @@ let ``combination.json`` () =
         test
             <@
                 match result with
-                | Value.Null -> sb.ToString() = "45\n"
+                | Value.Null -> sb.ToString().Trim() = "45"
                 | _ -> false
             @>

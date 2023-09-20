@@ -12,12 +12,16 @@ let visitStr left right binary =
     | BinaryOp.Neq -> Value.Bool(left <> right)
     | _ -> Value.Error $"Unsupported operation {binary.op} for type Str @ %A{binary.location}"
 
-let visitInt left right binary =
+let visitInt (left:decimal) (right:decimal) binary =
     match binary.op with
     | Add -> Value.Int(left + right)
     | Sub -> Value.Int(left - right)
     | Mul -> Value.Int(left * right)
-    | Div -> Value.Int(left / right)
+    | Div ->
+        if right = 0 then
+            Value.Error $"Division by zero @ %A{binary.location}"
+        else
+            Value.Int(left / right)
     | Rem -> Value.Int(left % right)
     | Eq -> Value.Bool(left = right)
     | Neq -> Value.Bool(left <> right)
