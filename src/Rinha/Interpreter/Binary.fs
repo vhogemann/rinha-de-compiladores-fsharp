@@ -1,5 +1,6 @@
 module Rinha.Interpreter.Binary
 
+open System.Numerics
 open Rinha.Interpreter
 open Rinha.AST.Nodes
 
@@ -12,7 +13,7 @@ let visitStr left right binary =
     | BinaryOp.Neq -> Value.Bool(left <> right)
     | _ -> Value.Error $"Unsupported operation {binary.op} for type Str @ %A{binary.location}"
 
-let visitInt (left:decimal) (right:decimal) binary =
+let visitInt (left:BigInteger) (right:BigInteger) binary =
     match binary.op with
     | Add -> Value.Int(left + right)
     | Sub -> Value.Int(left - right)

@@ -16,16 +16,16 @@ let LOC: Loc =
 let ``1 + 1`` () =
     let result =
         Term.Binary
-            { lhs = Term.Int { value = 1M; location = LOC }
+            { lhs = Term.Int { value = 1I; location = LOC }
               op = BinaryOp.Add
-              rhs = Term.Int { value = 1M; location = LOC }
+              rhs = Term.Int { value = 1I; location = LOC }
               location = LOC }
         |> Eval.evaluate System.Console.Out Map.empty
 
     test
         <@
             match result with
-            | Value.Int i -> i = 2M
+            | Value.Int i -> i = 2I
             | _ -> false
         @>
 
@@ -33,16 +33,16 @@ let ``1 + 1`` () =
 let ``1 - 1`` () =
     let result =
         Term.Binary
-            { lhs = Term.Int { value = 1M; location = LOC }
+            { lhs = Term.Int { value = 1I; location = LOC }
               op = BinaryOp.Sub
-              rhs = Term.Int { value = 1M; location = LOC }
+              rhs = Term.Int { value = 1I; location = LOC }
               location = LOC }
         |> Eval.evaluate System.Console.Out Map.empty
 
     test
         <@
             match result with
-            | Value.Int i -> i = 0M
+            | Value.Int i -> i = 0I
             | _ -> false
         @>
         
@@ -50,16 +50,16 @@ let ``1 - 1`` () =
 let ``1 / 1`` () =
     let result =
         Term.Binary
-            { lhs = Term.Int { value = 1M; location = LOC }
+            { lhs = Term.Int { value = 1I; location = LOC }
               op = BinaryOp.Div
-              rhs = Term.Int { value = 1M; location = LOC }
+              rhs = Term.Int { value = 1I; location = LOC }
               location = LOC }
         |> Eval.evaluate System.Console.Out Map.empty
 
     test
         <@
             match result with
-            | Value.Int i -> i = 1M
+            | Value.Int i -> i = 1I
             | _ -> false
         @>
         
@@ -67,9 +67,9 @@ let ``1 / 1`` () =
 let ``1 / 0`` () =
     let result =
         Term.Binary
-            { lhs = Term.Int { value = 1M; location = LOC }
+            { lhs = Term.Int { value = 1I; location = LOC }
               op = BinaryOp.Div
-              rhs = Term.Int { value = 0M; location = LOC }
+              rhs = Term.Int { value = 0I; location = LOC }
               location = LOC }
         |> Eval.evaluate System.Console.Out Map.empty
 
@@ -84,13 +84,13 @@ let ``1 / 0`` () =
 let ``1 + ( 2 - 1 )`` () =
     let result =
         Term.Binary
-            { lhs = Term.Int { value = 1M; location = LOC }
+            { lhs = Term.Int { value = 1I; location = LOC }
               op = BinaryOp.Add
               rhs =
                 Term.Binary
-                    { lhs = Term.Int { value = 2M; location = LOC }
+                    { lhs = Term.Int { value = 2I; location = LOC }
                       op = BinaryOp.Sub
-                      rhs = Term.Int { value = 1M; location = LOC }
+                      rhs = Term.Int { value = 1I; location = LOC }
                       location = LOC }
               location = LOC }
         |> Eval.evaluate System.Console.Out Map.empty
@@ -98,7 +98,7 @@ let ``1 + ( 2 - 1 )`` () =
     test
         <@
             match result with
-            | Value.Int i -> i = 2M
+            | Value.Int i -> i = 2I
             | _ -> false
         @>
 
@@ -125,8 +125,8 @@ let ``first (0,1)`` () =
         Term.First
             { value =
                 Term.Tuple
-                    { first = Term.Int { value = 0M; location = LOC }
-                      second = Term.Int { value = 1M; location = LOC }
+                    { first = Term.Int { value = 0I; location = LOC }
+                      second = Term.Int { value = 1I; location = LOC }
                       location = LOC }
               location = LOC }
         |> Eval.evaluate System.Console.Out Map.empty
@@ -134,7 +134,7 @@ let ``first (0,1)`` () =
     test
         <@
             match result with
-            | Value.Int i -> i = 0M
+            | Value.Int i -> i = 0I
             | _ -> false
         @>
 
@@ -144,8 +144,8 @@ let ``second (0,1)`` () =
         Term.Second
             { value =
                 Term.Tuple
-                    { first = Term.Int { value = 0M; location = LOC }
-                      second = Term.Int { value = 1M; location = LOC }
+                    { first = Term.Int { value = 0I; location = LOC }
+                      second = Term.Int { value = 1I; location = LOC }
                       location = LOC }
               location = LOC }
         |> Eval.evaluate System.Console.Out Map.empty
@@ -153,7 +153,7 @@ let ``second (0,1)`` () =
     test
         <@
             match result with
-            | Value.Int i -> i = 1M
+            | Value.Int i -> i = 1I
             | _ -> false
         @>
 
@@ -166,12 +166,12 @@ let ``Variable declaration`` () =
     let result =
         Term.Let
             { name = { text = "a"; location = LOC }
-              value = Term.Int { value = 1M; location = LOC }
+              value = Term.Int { value = 1I; location = LOC }
               location = LOC
               next =
                 Term.Let
                     { name = { text = "b"; location = LOC }
-                      value = Term.Int { value = 1M; location = LOC }
+                      value = Term.Int { value = 1I; location = LOC }
                       location = LOC
                       next =
                         Term.Let
@@ -189,7 +189,7 @@ let ``Variable declaration`` () =
     test
         <@
             match result with
-            | Value.Int i -> i = 2M
+            | Value.Int i -> i = 2I
             | _ -> false
         @>
 
@@ -199,9 +199,9 @@ let ``If Then`` () =
         Term.If
             { condition =
                 Term.Binary
-                    { lhs = Term.Int { value = 1M; location = LOC }
+                    { lhs = Term.Int { value = 1I; location = LOC }
                       op = BinaryOp.Gte
-                      rhs = Term.Int { value = 0M; location = LOC }
+                      rhs = Term.Int { value = 0I; location = LOC }
                       location = LOC }
               ``then`` = Term.Str { value = "foo"; location = LOC }
               otherwise = Term.Str { value = "bar"; location = LOC }
@@ -221,9 +221,9 @@ let ``If Else`` () =
         Term.If
             { condition =
                 Term.Binary
-                    { lhs = Term.Int { value = 0M; location = LOC }
+                    { lhs = Term.Int { value = 0I; location = LOC }
                       op = BinaryOp.Gte
-                      rhs = Term.Int { value = 1M; location = LOC }
+                      rhs = Term.Int { value = 1I; location = LOC }
                       location = LOC }
               ``then`` = Term.Str { value = "foo"; location = LOC }
               otherwise = Term.Str { value = "bar"; location = LOC }
@@ -259,15 +259,15 @@ let ``Function Call`` () =
                 Term.Call
                     { callee = Var { text = "sum"; location = LOC }
                       arguments =
-                        [| Term.Int { value = 1M; location = LOC }
-                           Term.Int { value = 1M; location = LOC } |]
+                        [| Term.Int { value = 1I; location = LOC }
+                           Term.Int { value = 1I; location = LOC } |]
                       location = LOC } }
         |> Eval.evaluate System.Console.Out Map.empty
 
     test
         <@
             match result with
-            | Value.Int i -> i = 2M
+            | Value.Int i -> i = 2I
             | _ -> false
         @>
 

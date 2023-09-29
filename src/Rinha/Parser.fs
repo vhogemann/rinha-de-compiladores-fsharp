@@ -16,7 +16,7 @@ module Decode =
     let integer (get: Decode.IGetters) =
         AST.Nodes.Term.Int
             { location = get |> location
-              value = get.Required.Field "value" Decode.decimal }
+              value = get.Required.Field "value" Decode.bigint }
 
     let string (get: Decode.IGetters) =
         AST.Nodes.Term.Str
