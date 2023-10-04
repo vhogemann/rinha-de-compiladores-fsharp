@@ -1,5 +1,7 @@
 module Rinha.AST
 
+open System.Numerics
+
 module Nodes =
    type File = {
         name: string
@@ -28,7 +30,7 @@ module Nodes =
         location: Loc
     }
     and Bool = Literal<bool>
-    and Int = Literal<decimal>
+    and Int = Literal<BigInteger>
     and Str = Literal<string>
     and Var = {
         text: string

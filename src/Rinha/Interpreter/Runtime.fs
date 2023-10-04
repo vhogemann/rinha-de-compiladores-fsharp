@@ -1,9 +1,10 @@
 ﻿namespace Rinha.Interpreter
 
+open System.Numerics
 open Rinha.AST.Nodes
 
 type Value =
-| Int of decimal
+| Int of BigInteger
 | Str of string
 | Bool of bool
 | Tuple of Value*Value
