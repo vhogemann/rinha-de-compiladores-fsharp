@@ -331,3 +331,23 @@ let ``combination.json`` () =
                 | Value.Null -> sb.ToString().Trim() = "45"
                 | _ -> false
             @>
+
+[<Test>]
+let ``source.rinha.json`` () =
+    let sb = StringBuilder()
+    let writer = new StringWriter(sb)
+    
+    let json = File.ReadAllText("JSON/source.rinha.json")
+    let result = json |> Rinha.Parser.parse
+
+    match result with
+    | Result.Error msg -> failwith msg
+    | Result.Ok file ->
+        let result = file.expression |> Eval.evaluate writer Map.empty
+
+        test
+            <@
+                match result with
+                | Value.Null -> sb.ToString().Trim() = "@!compile::\r\n@!fibbo::610"
+                | _ -> false
+            @>

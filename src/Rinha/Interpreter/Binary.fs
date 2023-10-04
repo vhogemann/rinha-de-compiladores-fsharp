@@ -4,8 +4,6 @@ open Rinha.Interpreter
 open Rinha.AST.Nodes
 
 let visitStr left right binary =
-    let right = Literal.toString right
-
     match binary.op with
     | BinaryOp.Add -> Value.Str(left + right)
     | BinaryOp.Eq -> Value.Bool(left = right)
@@ -45,7 +43,8 @@ let visit (eval: Evaluator) (bin: Binary) : Value =
     let right = bin.rhs |> eval
 
     match left, right with
-    | Value.Str s, _ -> visitStr s right bin
+    | Value.Str s, _ -> visitStr s (Literal.toString right) bin
+    | _, Value.Str s -> visitStr (Literal.toString left) s bin
     | Value.Int l, Value.Int r -> visitInt l r bin
     | Value.Bool l, Value.Bool r -> visitBool l r bin
     | Error e, _ -> Error e

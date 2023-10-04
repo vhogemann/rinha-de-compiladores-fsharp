@@ -18,6 +18,9 @@
         <Content Include="JSON\fib.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="JSON\source.rinha.json">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
         <Content Include="JSON\sum.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
