@@ -348,6 +348,6 @@ let ``source.rinha.json`` () =
         test
             <@
                 match result with
-                | Value.Null -> sb.ToString().Trim() = "@!compile::\r\n@!fibbo::610"
+                | Value.Null -> sb.ToString() = "@!compile::\r\n@!fibbo::610\r\n"
                 | _ -> false
             @>
